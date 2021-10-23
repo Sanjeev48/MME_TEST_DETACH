@@ -1,0 +1,5 @@
+module S11Messages
+{
+	type charstring GTPC_DSR;
+	type charstring GTPC_DSRs;
+}

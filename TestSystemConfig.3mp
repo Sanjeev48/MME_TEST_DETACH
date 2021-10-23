@@ -1,0 +1,52 @@
+module TestSystemConfig
+{
+	import from S1APMessages all;
+	import from S6AMessages all;
+	import from S11Messages all;
+    import from ControlMessages all;
+
+
+   type port S1APPort message
+	{
+		inout S1AP_PDU;
+	}
+	
+	type port S6APort message
+	{
+		out S6A_NOA;
+		in S6A_NOR;
+	}
+	
+	type port S11Port message
+	{
+		out GTPC_DSRs;
+		in GTPC_DSR;
+	} 
+
+    
+	type port MTCControlPort message 
+	{
+		out MTC_TO_PTC_COMMAND;
+		in PTC_TO_MTC_REPORT;
+	}
+	
+	type port PTCControlPort message
+	{
+		in MTC_TO_PTC_COMMAND;
+		out PTC_TO_MTC_REPORT;
+	}	
+
+	type component ENB{port S1APPort S1APP;timer S1APTimer := 10.0; port PTCControlPort PTCCP1;}
+    type component SGW{port S11Port S11P; timer S11Timer := 10.0; port PTCControlPort PTCCP2;}
+	type component HSS{port S6APort S6AP; timer S6ATimer := 10.0; port PTCControlPort PTCCP3;}
+	
+	type component MTC{port MTCControlPort MTCCP1, MTCCP2, MTCCP3;}
+	type component TSI
+	{
+		port S1APPort S1APT;
+ 		port S6APort S6AT;
+ 		port S11Port S11T;	
+	}
+	
+	
+}

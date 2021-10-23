@@ -1,0 +1,35 @@
+module HSSFunctions
+{
+	import from TestSystemConfig all;
+	import from S6ATemplates all;
+	import from ControlTemplates all;	
+
+	function HSSJob() runs on HSS
+	{
+		PTCCP3.receive(MTC_TO_PTC_COMMAND_T1);
+		F1_NOR_NOA();
+ 		PTCCP3.send(PTC_TO_MTC_REPORT_T1);
+    }
+   
+   
+    function F1_NOR_NOA() runs on HSS
+	{
+		S6ATimer.start;
+		alt
+		{
+			[]S6AP.receive(S6A_NOR_R_T1)
+			{
+				S6AP.send(S6A_NOA_S_T1);
+				setverdict(pass);
+			}
+			[]S6AP.receive
+			{
+				setverdict(fail);
+			}
+			[]S6ATimer.timeout
+			{
+				setverdict(fail);
+			}
+		}	
+	}
+}		

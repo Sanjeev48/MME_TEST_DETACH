@@ -1,0 +1,4 @@
+module S1APMessages
+{
+   type charstring S1AP_PDU;
+}

@@ -1,0 +1,7 @@
+module S6ATemplates
+{
+	import from S6AMessages all;
+
+    template S6A_NOR S6A_NOR_R_T1 := "SESSION ID+OH+OR+DR+USERNAME+SERVICEINFO";
+	template S6A_NOA S6A_NOA_S_T1 := "SESSION ID+DIAMETER RESULT+OH+OR";
+}

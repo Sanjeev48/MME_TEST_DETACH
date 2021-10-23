@@ -1,0 +1,7 @@
+module S11Templates
+{
+	import from S11Messages all;
+
+	template GTPC_DSR GTPC_DSR_R_T1 := "TEID:MME S11 TEID+ GTPC DETACH BEARER";
+	template GTPC_DSRs GTPC_DSRs_S_T1 := "TEID:MME S11 TEID+ GTPC CAUSE:ACCEPTED";
+}

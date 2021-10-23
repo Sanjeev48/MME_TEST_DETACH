@@ -1,0 +1,6 @@
+module S6AMessages
+{
+	type charstring S6A_NOR; 
+	type charstring S6A_NOA;
+}
+	

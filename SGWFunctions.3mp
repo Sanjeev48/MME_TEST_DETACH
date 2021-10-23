@@ -1,0 +1,35 @@
+module SGWFunctions
+{
+	import from TestSystemConfig all;
+	import from S11Templates all;
+	import from ControlTemplates all;	
+
+	function SGWJob() runs on SGW
+	{
+		PTCCP2.receive(MTC_TO_PTC_COMMAND_T1);
+		F1_DSR_DSRs();
+ 		PTCCP2.send(PTC_TO_MTC_REPORT_T1);
+    }
+   
+    function F1_DSR_DSRs() runs on SGW
+	{		
+ 		S11Timer.start;
+		alt
+		{
+			[]S11P.receive(GTPC_DSR_R_T1)
+			{
+				S11P.send(GTPC_DSRs_S_T1);
+				setverdict(pass);
+			}
+			[]S11P.receive
+			{
+				setverdict(fail);
+			}
+			[]S11Timer.timeout
+ 			{
+				setverdict(fail);
+			}	
+		}	
+	}	
+}
+

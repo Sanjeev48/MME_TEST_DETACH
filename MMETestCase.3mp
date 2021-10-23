@@ -1,0 +1,63 @@
+module MMETestCases
+{
+	import from TestSystemConfig all;
+	import from ENBFunctions all;
+	import from HSSFunctions all;	
+	import from SGWFunctions all;
+	import from ControlTemplates all;			
+
+	testcase MMETEST_NUES_DETACH_TEST_001() runs on MTC system TSI
+	{
+		//MTC create the components needed
+		var ENB ENB1 := ENB.create;
+		var HSS HSS1 := HSS.create;
+		var SGW SGW1 := SGW.create;
+
+		//Port Mapping
+		map(ENB1:S1APP, system:S1APT);
+	 	map(HSS1:S6AP, system:S6AT);
+		map(SGW1:S11P, system:S11T);
+
+		//MTC and PTC Ports must be Connected - Required for MTC to Control the PTC to achieve the Message Order
+		connect(self:MTCCP1, ENB1:PTCCP1);
+		connect(self:MTCCP3, HSS1:PTCCP3);  
+		connect(self:MTCCP2, SGW1:PTCCP2);  
+		
+		//Start the components to do their Job
+		ENB1.start(ENBJob()); //started but waiting
+		HSS1.start(HSSJob()); //started but waiting
+		SGW1.start(SGWJob()); //started but waiting
+
+        MTCCP2.send(MTC_TO_PTC_COMMAND_T1);
+		MTCCP1.send(MTC_TO_PTC_COMMAND_T1);  //Sub-Functions counts ENB:3, SGW:1, HSS:2
+		MTCCP2.receive(PTC_TO_MTC_REPORT_T1);
+		MTCCP1.receive(PTC_TO_MTC_REPORT_T1); //Sub-Functions counts ENB:2, SGW:DONE, HSS:2
+        
+ 	    
+		MTCCP3.receive(PTC_TO_MTC_REPORT_T1);
+ 	    MTCCP3.send(MTC_TO_PTC_COMMAND_T1);	 //Sub-Functions counts ENB:1, SGW:DONE, HSS:1
+			
+        MTCCP1.receive(PTC_TO_MTC_REPORT_T1);
+ 	    MTCCP1.send(MTC_TO_PTC_COMMAND_T1);  //Sub-Functions counts ENB:DONE, SGW:DONE, HSS:DONE
+		
+		all component.done;
+
+		//disconnect MTC to PTC Control Ports
+		disconnect(self:MTCCP1, ENB1:PTCCP1);
+		disconnect(self:MTCCP3, HSS1:PTCCP3);
+		disconnect(self:MTCCP2, SGW1:PTCCP2); 
+		
+		//port Unmapping	
+		unmap(ENB1:S1APP, system:S1APT);
+	 	unmap(HSS1:S6AP, system:S6AT);
+		unmap(SGW1:S11P, system:S11T);
+
+		//stop the test case by stopping mtc and killing all components created
+		stop;	
+	}
+
+	control
+	{
+ 	    execute(MMETEST_NUES_DETACH_TEST_001());	
+	}
+}

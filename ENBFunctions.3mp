@@ -1,0 +1,62 @@
+module ENBFunctions
+{
+	import from TestSystemConfig all;
+	import from S1APTemplates all;
+	import from ControlTemplates all;
+
+  function ENBJob() runs on ENB
+	{
+        PTCCP1.receive(MTC_TO_PTC_COMMAND_T1);	
+		F1_UL_NAS_DL_NAS();
+		PTCCP1.send(PTC_TO_MTC_REPORT_T1);
+		
+		PTCCP1.receive(MTC_TO_PTC_COMMAND_T1);	
+		F2_UCRR_UCRRs();
+		PTCCP1.send(PTC_TO_MTC_REPORT_T1);	
+	}
+	 
+    function F1_UL_NAS_DL_NAS() runs on ENB
+	{
+		S1APP.send(S1AP_PDU_UL_NAS_S_T1);
+ 		S1APTimer.start;
+		alt
+		{
+			[]S1APP.receive(S1AP_PDU_DL_NAS_R_T1)
+			{
+				setverdict(pass);
+			}
+			[]S1APP.receive
+			{
+				setverdict(fail);
+			}
+			[]S1APTimer.timeout
+			{
+				setverdict(fail);
+			}
+		}	
+	}
+
+    
+     function F2_UCRR_UCRRs() runs on ENB
+	  {
+		
+ 		S1APTimer.start;
+		alt
+		{
+			[]S1APP.receive(S1AP_PDU_UCRRs_S_T2)
+			{
+			    S1APP.send(S1AP_PDU_UCRR_R_T2);
+				setverdict(pass);
+			}
+			[]S1APP.receive
+			{
+				setverdict(fail);
+			}
+			[]S1APTimer.timeout
+			{
+				setverdict(fail);
+			}
+		}	
+	}
+
+}  
